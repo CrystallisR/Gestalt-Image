@@ -4,15 +4,11 @@ import random
 
 # Gestalt-continuity principle:
 '''
-The Gestalt Principle of Continuity states that we are more likely to see continuous 
-and smooth flowing lines rather than broken or jagged ones. This is because once our 
-eyes begin to follow something, they will continue to travel in that direction until 
-it encounters another item or object. For instance, an excellent example of this 
-Continuity principle is a line with an arrow at the end of it.
+The Gestalt Principle of Continuity is that our brains tend to see objects 
+as continuous or smooth rather than disjointed or discontinuous. 
 '''
-
-#1 to do: generate an image that satisfy Gestalt-continuity principle
-#2 to do: generate an image that doesn't satisfy Gestalt-continuity principle
+#1 to-do: generate an image that satisfies Gestalt-continuity principle
+#2 to-do: generate an image that dissatisfies Gestalt-continuity principle
 
 class Gestalt():
     
