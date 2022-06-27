@@ -15,17 +15,18 @@ def rectanglePos(size, margin=0.3, wmaxf=0.8, wminf=0.5, hmaxf=0.3, hminf=0.1):
     coords = [(-w/2.0, -h/2.0), (-w/2.0, h/2.0), (w/2.0, h/2.0), (w/2.0, -h/2.0)]
     return [(x*ctheta - y*stheta + ox, x*stheta + y*ctheta + oy) for (x, y) in coords]
 
-# return coordinates of the 4 vertices of a rhomboid
-# rhomboid has 4 vertices which are a, b, c, d in anti-clockwise order
-def rhomboidPos(size, margin=0.3, wmaxf=0.4, wminf=0.2, hmaxf=0.4, hminf=0.2):
+# return coordinates of the 4 vertices of a rhombus
+# rhombus has 4 vertices which are a, b, c, d in anti-clockwise order
+def rhombusPos(size, margin=0.3, maxl=0.4, minl=0.2):
     wsz, hsz = size
-    w, h = random.randint(wsz*wminf, wsz*wmaxf), random.randint(hsz*hminf, hsz*hmaxf)
-    # center point of a rhomboid
+    ssz = min(wsz, hsz)
+    l1, l2 = random.randint(ssz*minl, ssz*maxl), random.randint(ssz*minl, ssz*maxl)
+    # center point of a rhombus
     ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
     theta = random.randint(0, 180)*math.pi/180 # center line angle
-    ctheta, stheta = math.cos(theta), math.sin(theta)
-    coords = [(-w/2.0, -h/2.0), (-w/2.0, h/2.0), (w/2.0, h/2.0), (w/2.0, -h/2.0)]
-    return [(x*ctheta + y*stheta + ox, x*stheta + y*ctheta + oy) for (x, y) in coords]
+    coords = [(l1/2.0, l1/2.0), (l2/2.0, l2/2.0), (l1/2.0, l1/2.0), (l2/2.0, l2/2.0)]
+    return [(-coords[i][0]*math.cos(theta+i*math.pi/2) + ox, 
+            -coords[i][1]*math.sin(theta+i*math.pi/2) + oy) for i in range(4)]
 
 # return coordinates of the 3 vertices of a triangle
 # triangle has 3 vertices which are a, b, c in anti-clockwise order
@@ -46,8 +47,8 @@ def trianglePos(size, margin=0.3, maxl=0.4, minl=0.2):
 params:
 path = where to save the generated figure
 size = image size
-polynum = set numbers of desired polygons-> from left to right: rectangle, rhomboid, triangle
-colors = set colors for desired polygons-> from left to right: background color, rectangle, rhomboid, triangle
+polynum = set numbers of desired polygons-> from left to right: rectangle, rhombus, triangle
+colors = set colors for desired polygons-> from left to right: background color, rectangle, rhombus, triangle
 '''
 def drawPolys(path, size=(300, 300), polynum = [2,2,2],
             colors= [(255, 255, 255), (0,0,0), (0,0,0), (0,0,0)]):
@@ -55,7 +56,6 @@ def drawPolys(path, size=(300, 300), polynum = [2,2,2],
     bgColor, rectColor, rhomColor, triColor = colors
     # background
     bg = Image.new("RGB", size, bgColor)
-    # create rectangles
     img = ImageDraw.Draw(bg)  
     if tri >= 2:
         for i in range(int(tri/2)):
@@ -65,7 +65,7 @@ def drawPolys(path, size=(300, 300), polynum = [2,2,2],
         pos = rectanglePos(size)
         img.polygon(pos, fill=rectColor)
     for i in range(rhom):
-        pos = rhomboidPos(size)
+        pos = rhombusPos(size)
         img.polygon(pos, fill=rhomColor)
     for i in range(tri - int(tri/2) if tri >= 2 else tri):
         pos = trianglePos(size)

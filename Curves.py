@@ -25,11 +25,11 @@ def circlePos(size, margin=0.3, maxr=0.4, minr=0.2):
     radius = random.randint(ssz*minr, ssz*maxr)
     lx, ly = ox - radius*math.cos(math.pi/4), oy - radius*math.sin(math.pi/4)
     rx, ry = ox + radius*math.cos(math.pi/4), oy + radius*math.sin(math.pi/4)
-    return (int(lx), int(ly), int(rx), int(ry))
+    return (lx, ly, rx, ry)
 
 # return the top-left and bottom-right corners of the enclosing rectangle (bounding box)
 # and return the start and end angle of the arc
-def arcPos(size, margin=0.3, maxr=0.6, minr=0.2, maxp=0.4, minp=0.1):
+def arcPos(size, margin=0.3, maxr=0.6, minr=0.2, maxp=0.6, minp=0.2):
     wsz, hsz = size
     ssz = min(wsz, hsz)
     # center point of a circle
@@ -55,7 +55,6 @@ def drawCurves(path, size, curvenum=[2, 2, 2], colors=[(255, 255, 255), (0,0,0),
     lines, circles, arcs = curvenum
     bgColor, lineColor, circleColor, arcColor = colors
     bg = Image.new("RGB", size, bgColor)
-    # create rectangles
     img = ImageDraw.Draw(bg)  
     for i in range(lines):
         pos = linePos(size)
