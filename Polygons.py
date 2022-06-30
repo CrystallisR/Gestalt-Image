@@ -7,9 +7,9 @@ from PIL import Image, ImageDraw
 # rectangle has 4 vertices which are a, b, c, d in anti-clockwise order
 def rectanglePos(size, margin=0.3, wmaxf=0.8, wminf=0.5, hmaxf=0.3, hminf=0.1):
     wsz, hsz = size
-    w, h = random.randint(wsz*wminf, wsz*wmaxf), random.randint(hsz*hminf, hsz*hmaxf)
-    # center point of a rectangle
-    ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
+    w, h = random.randint(int(wsz*wminf), int(wsz*wmaxf)), random.randint(int(hsz*hminf), int(hsz*hmaxf))
+    # center point of a rectangle 
+    ox, oy = random.randint(int(wsz*margin), wsz-int(wsz*margin)), random.randint(int(hsz*margin), hsz-int(hsz*margin))
     theta = random.randint(0, 180)*math.pi/180 # center line angle
     ctheta, stheta = math.cos(theta), math.sin(theta)
     coords = [(-w/2.0, -h/2.0), (-w/2.0, h/2.0), (w/2.0, h/2.0), (w/2.0, -h/2.0)]
@@ -20,9 +20,9 @@ def rectanglePos(size, margin=0.3, wmaxf=0.8, wminf=0.5, hmaxf=0.3, hminf=0.1):
 def rhombusPos(size, margin=0.3, maxl=0.4, minl=0.2):
     wsz, hsz = size
     ssz = min(wsz, hsz)
-    l1, l2 = random.randint(ssz*minl, ssz*maxl), random.randint(ssz*minl, ssz*maxl)
+    l1, l2 = random.randint(int(ssz*minl), int(ssz*maxl)), random.randint(int(ssz*minl), int(ssz*maxl))
     # center point of a rhombus
-    ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
+    ox, oy = random.randint(int(wsz*margin), wsz-int(wsz*margin)), random.randint(int(hsz*margin), hsz-int(hsz*margin))
     theta = random.randint(0, 180)*math.pi/180 # center line angle
     coords = [(l1/2.0, l1/2.0), (l2/2.0, l2/2.0), (l1/2.0, l1/2.0), (l2/2.0, l2/2.0)]
     return [(-coords[i][0]*math.cos(theta+i*math.pi/2) + ox, 
@@ -34,12 +34,12 @@ def trianglePos(size, margin=0.3, maxl=0.4, minl=0.2):
     wsz, hsz = size
     ssz = min(wsz, hsz)
     # center point of a triangle
-    ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
-    thetas = [random.randint(0, 360)*math.pi/180 for i in range(3)]
+    ox, oy = random.randint(int(wsz*margin), wsz-int(wsz*margin)), random.randint(int(hsz*margin), hsz-int(hsz*margin))
+    thetas = [random.randint(0, 360)*math.pi/180 for _ in range(3)]
     while thetas[0] == thetas[1] or thetas[0] == thetas[2] or thetas[1] == thetas[2]:
         thetas[1] = random.randint(0, 360)*math.pi/180
         thetas[2] = random.randint(0, 360)*math.pi/180
-    ls = [random.randint(ssz*minl, ssz*maxl) for i in range(3)]
+    ls = [random.randint(int(ssz*minl), int(ssz*maxl)) for _ in range(3)]
     return [(ox + ls[i]*math.cos(thetas[i]), oy + ls[i]*math.sin(thetas[i])) for i in range(3)]
 
 # draw varoius randomly scattered polygons

@@ -8,8 +8,8 @@ def linePos(size, margin=0.3, maxf=0.8, minf=0.6):
     wsz, hsz = size
     ssz = min(wsz, hsz)
     # center point of a line segment
-    ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
-    l = random.randint(ssz*minf, ssz*maxf)
+    ox, oy = random.randint(int(wsz*margin), wsz-int(wsz*margin)), random.randint(int(hsz*margin), hsz-int(hsz*margin))
+    l = random.randint(int(ssz*minf), int(ssz*maxf))
     theta = random.randint(0, 180)*math.pi/180 # line angle
     ax, ay = ox - l*math.cos(theta)/2.0, oy + l*math.sin(theta)/2.0
     bx, by = ox + l*math.cos(theta)/2.0, oy - l*math.sin(theta)/2.0
@@ -21,8 +21,8 @@ def circlePos(size, margin=0.3, maxr=0.4, minr=0.2):
     wsz, hsz = size
     ssz = min(wsz, hsz)
     # center point of a circle
-    ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
-    radius = random.randint(ssz*minr, ssz*maxr)
+    ox, oy = random.randint(int(wsz*margin), wsz-int(wsz*margin)), random.randint(int(hsz*margin), hsz-int(hsz*margin))
+    radius = random.randint(int(ssz*minr), int(ssz*maxr))
     lx, ly = ox - radius*math.cos(math.pi/4), oy - radius*math.sin(math.pi/4)
     rx, ry = ox + radius*math.cos(math.pi/4), oy + radius*math.sin(math.pi/4)
     return (lx, ly, rx, ry)
@@ -33,11 +33,11 @@ def arcPos(size, margin=0.3, maxr=0.6, minr=0.2, maxp=0.6, minp=0.2):
     wsz, hsz = size
     ssz = min(wsz, hsz)
     # center point of a circle
-    ox, oy = random.randint(wsz*margin, wsz-wsz*margin), random.randint(hsz*margin, hsz-hsz*margin)
-    radius = random.randint(ssz*minr, ssz*maxr)
+    ox, oy = random.randint(int(wsz*margin), wsz-int(wsz*margin)), random.randint(int(hsz*margin), hsz-int(hsz*margin))
+    radius = random.randint(int(ssz*minr), int(ssz*maxr))
     lx, ly = ox - radius*math.cos(math.pi/4), oy - radius*math.sin(math.pi/4)
     rx, ry = ox + radius*math.cos(math.pi/4), oy + radius*math.sin(math.pi/4)
-    arclen = random.randint(360*minp, 360*maxp)
+    arclen = random.randint(int(360*minp), int(360*maxp))
     start = random.randint(0, 360)
     end = (start + arclen)%360
     return (lx, ly, rx, ry), start, end
@@ -50,7 +50,7 @@ size = image size
 curvenum = set numbers of desired curves-> from left to right: line, circle, arc
 colors = set colors for desired curves-> from left to right: background color, line, circle, arc
 '''
-def drawCurves(path, size, curvenum=[2, 2, 2], colors=[(255, 255, 255), (0,0,0), (0,0,0), (0,0,0)], width=2):
+def drawCurves(path, size, curvenum=[2, 2, 2], colors=[(255, 255, 255), (0,0,0), (0,0,0), (0,0,0)], width=1):
     # background
     lines, circles, arcs = curvenum
     bgColor, lineColor, circleColor, arcColor = colors
