@@ -73,7 +73,6 @@ colors = list of colors
 def drawPoints(path, num=2, img_sz=(1, 1), dpi=128, psz=10, colors=["black"], markers=["."]):
     # number of colors should be consistent with line numbers 
     c_num, m_num = len(colors), len(markers)
-    c_num = len(colors)
     plt.figure(figsize=img_sz, dpi=dpi)
     x_list1, y_list1 = setPoints(True)
     x_list2, y_list2 = setPoints(False)
@@ -103,7 +102,6 @@ markers = list of markers
 def drawPointsNoise(path, num=2, img_sz=(1, 1), dpi=128, psz=10, intensity=1.0, colors=["black"], markers=["."]):
     # number of colors should be consistent with line numbers 
     c_num, m_num = len(colors), len(markers)
-    c_num = len(colors)
     plt.figure(figsize=img_sz, dpi=dpi)
     x_list1, y_list1 = setPoints(True)
     x_list2, y_list2 = setPoints(False)
@@ -138,6 +136,31 @@ def drawPointsMul(path, num_range=(2, 5), plots=(5, 5), dpi=128, psz=10, colors=
             for _ in range(num-2):
                 fg = True if random.randint(0,1) == 1 else False
                 x_list, y_list = setPoints(fg)
+                plt.scatter(x_list, y_list, s=psz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
+        plt.axis('off')
+    plt.savefig(path)
+    
+# draw points with noise on a subfigure
+# draw multiple subfigures on a figure
+# for display purpose
+def drawPointsNoiseMul(path, num_range=(2, 5), plots=(5, 5), dpi=128, psz=10, intensity=1.0, colors=["black"], markers=["."]):
+    c_num, m_num = len(colors), len(markers)
+    fig = plt.figure(figsize=plots, dpi=dpi)
+    rows, cols = plots[0], plots[1]
+    for i in range(1, rows*cols+1):
+        fig.add_subplot(rows, cols, i)
+        x_list1, y_list1 = setPoints(True)
+        x_list2, y_list2 = setPoints(False)
+        x_list1, y_list1 = addNoise(x_list1, y_list1, intensity)
+        x_list2, y_list2 = addNoise(x_list2, y_list2, intensity)
+        plt.scatter(x_list1, y_list1, s=psz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
+        plt.scatter(x_list2, y_list2, s=psz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
+        num = random.randint(num_range[0], num_range[1])
+        if num > 1:
+            for _ in range(num-2):
+                fg = True if random.randint(0,1) == 1 else False
+                x_list, y_list = setPoints(fg)
+                x_list, y_list = addNoise(x_list, y_list, intensity)
                 plt.scatter(x_list, y_list, s=psz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
         plt.axis('off')
     plt.savefig(path)

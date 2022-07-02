@@ -1,7 +1,7 @@
-from Polygons import drawPolys
-from Curves import drawCurves
-from Discontinuity import drawDis, drawDis2
-from Points import drawPoints
+from obsolete.Polygons import drawPolys
+from obsolete.Curves import drawCurves
+from obsolete.Discontinuity import drawDis, drawDis2
+from obsolete.Points import drawPoints
 import random
 
 SP1 = ('sample/s1.png')
