@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 # ignore data
-Continuous/
-Discontinuous/
+positive/
+negative/
 sample/
