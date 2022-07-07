@@ -11,7 +11,7 @@ SP7 = ('sample/n1.png')
 SP8 = ('sample/n2.png')
 # default parameters
 IMG_NUM = 10
-RANGE = (2, 5)
+RANGE = (2, 3)
 SIZE = (1, 1)
 DPI = 128 # combined with SIZE: 128*128 pixels
 MSZ = 10

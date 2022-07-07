@@ -32,8 +32,8 @@ class Continuity(Gestalt):
 
     '''
     
-    def __init__(self, num_range = (2, 5), img_sz = (1, 1), dpi = 128, msz = 10, 
-                intensity = 1.0, colors = np.array(["black"]), markers = np.array(["."])) -> None:
+    def __init__(self, num_range = (2, 4),  intensity = 1.0, img_sz = (1, 1), dpi = 128, 
+                msz = 10, colors = np.array(["black"]), markers = np.array(["."])) -> None:
         super().__init__()
         self.colors = colors
         self.markers = markers
@@ -46,20 +46,23 @@ class Continuity(Gestalt):
     def genPositiveImg(self, path):
         '''
         generate positive image, which means that it satisfies Gestalt continuity principle
-        
-        image contents : scattered points which seems like curves if connected
 
         '''
         self.__genImg(path, False)
  
-    def genNegativeImg(self, path):
+    def genNegativeImg(self, path, type= 1):
         '''
         generate negative image, which means that it dissatisfies Gestalt continuity principle
         
-        image contents : scattered points which seems like nothing if connected (disordered)
+        parameters
+        ----------
+        type: which type of negative image to generate; two values available now: int (1 / 2)
 
         '''
-        self.__genImg(path, True)
+        if type == 1:
+            self.__genImg(path, True)
+        else:
+            self.__genDisconType2(path)
         
     def genPositiveImgSamples(self, path, plots=(5, 5)):
         '''
@@ -68,12 +71,19 @@ class Continuity(Gestalt):
         '''
         self.__genImgSamples(path, False, plots)
         
-    def genNegativeImgSamples(self, path, plots=(5, 5)):
+    def genNegativeImgSamples(self, path, plots=(5, 5), type= 1):
         '''
         generate multiple pnegative images, for display
+        
+        parameters
+        ----------
+        type: which type of negative image to generate; two values available now: int (1 / 2)
 
         '''
-        self.__genImgSamples(path, True, plots)
+        if type == 1:
+            self.__genImgSamples(path, True, plots)
+        else:
+            self.__genImgSamples(path, True, plots)
         
     # <------------------------------------------------------------->
     # | The functions below are necessary in the case of continuity |
@@ -89,24 +99,16 @@ class Continuity(Gestalt):
         isN : whether generate negative image
         
         '''
-        colors, markers, num_range, img_sz, dpi, msz = \
-        self.colors, self.markers, self.num_range, self.img_sz, self.dpi, self.msz
-        c_num, m_num, num = len(colors), len(markers), random.randint(self.num_range[0], self.num_range[1])
-        plt.figure(figsize=img_sz, dpi=dpi)
-        fg = True if random.randint(0,1) == 1 else False
-        x_list, y_list = self.__setPoints(isN, rev=fg)
-        plt.scatter(x_list, y_list, s=msz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
-        if num > 1:
-            x_list, y_list = self.__setPoints(isN, rev=(not fg))
-            plt.scatter(x_list, y_list, s=msz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
-            for _ in range(num-2):
-                fg = True if random.randint(0,1) == 1 else False
-                x_list, y_list = self.__setPoints(isN, rev=fg)
-                plt.scatter(x_list, y_list, s=msz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
+        c_num, m_num = len(self.colors), len(self.markers)
+        plt.figure(figsize=self.img_sz, dpi=self.dpi)
+        x_lists, y_lists = self.__genImgData(isN)
+        for i in range(len(x_lists)): 
+            plt.scatter(x_lists[i], y_lists[i], s=self.msz, c=self.colors[random.randint(0, c_num-1)], 
+                        marker=self.markers[random.randint(0, m_num-1)])
         plt.axis('off')
         plt.savefig(path)
         plt.close()
-        
+    
     def __genImgSamples(self, path, isN, plots):
         '''
         prototype for generating both positive & negative image massive samples
@@ -119,26 +121,62 @@ class Continuity(Gestalt):
         isN : whether generate negative image
         
         '''
-        colors, markers, dpi, msz = self.colors, self.markers, self.dpi, self.msz
-        num = random.randint(self.num_range[0], self.num_range[1])
-        c_num, m_num = len(colors), len(markers)
-        fig = plt.figure(figsize=plots, dpi=dpi)
+        c_num, m_num = len(self.colors), len(self.markers)
+        fig = plt.figure(figsize=plots, dpi=self.dpi)
         rows, cols = plots[0], plots[1]
         for i in range(1, rows*cols+1):
             fig.add_subplot(rows, cols, i)
-            fg = True if random.randint(0,1) == 1 else False
-            x_list, y_list = self.__setPoints(isN, rev=fg)
-            plt.scatter(x_list, y_list, s=msz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
-            if num > 1:
-                x_list, y_list = self.__setPoints(isN, rev=(not fg))
-                plt.scatter(x_list, y_list, s=msz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
-                for _ in range(num-2):
-                    fg = True if random.randint(0,1) == 1 else False
-                    x_list, y_list = self.__setPoints(isN, rev=fg)
-                    plt.scatter(x_list, y_list, s=msz, c=colors[random.randint(0, c_num-1)], marker=markers[random.randint(0, m_num-1)])
+            x_lists, y_lists = self.__genImgData(isN)
+            for i in range(len(x_lists)): 
+                plt.scatter(x_lists[i], y_lists[i], s=self.msz, c=self.colors[random.randint(0, c_num-1)], 
+                        marker=self.markers[random.randint(0, m_num-1)])
             plt.axis('off')
         plt.savefig(path)
         plt.close()
+        
+    def __genImgData(self, isN):
+        '''
+        generate data which is needed for __genImg() and __genImgSample()
+        
+        return 2 lists of lists (which contain x & y points respectively)
+        
+        parameters
+        ----------
+        isN : whether generate negative image
+        
+        '''
+        x_lists, y_lists = [], []
+        num = random.randint(self.num_range[0], self.num_range[1])
+        fg = True if random.randint(0,1) == 1 else False
+        for _ in range(num):
+            x_list, y_list = self.__setPoints(isN, rev=fg)
+            x_lists.append(x_list), y_lists.append(y_list)
+            fg = not fg if num==2 else True if random.randint(0,1) == 1 else False
+        return x_lists, y_lists
+        
+    def __genDisconType2(self, path):
+        '''
+        prototype for generating negative image type 2
+        
+        disconnect a continued curve
+        
+        parameters
+        ----------
+        path : where to save the image
+        isN : whether generate negative image
+        
+        '''
+        pass
+    
+    def __disconType2Data(self):
+        '''
+        generate data which is needed for __genDisconType2() and __genImgSample()
+        
+        return 2 lists of lists (which contain x & y points respectively)
+        
+        '''
+        x_lists, y_lists = [], []
+        return x_lists, y_lists
 
     def __setPoints(self, isN, rev=True, p_num=10, funcs=10, n_min=0.6, n_max=1.0):
         '''

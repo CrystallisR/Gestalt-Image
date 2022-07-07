@@ -132,3 +132,6 @@ dmypy.json
 positive/
 negative/
 sample/
+
+# ignore test files
+exper.py
