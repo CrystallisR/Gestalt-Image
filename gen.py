@@ -6,13 +6,14 @@ import argparse
 PPATH = "positive/p_con_img"
 NPATH = "negative/n_con_img"
 IMG_NUM = 10
-RANGE = (2, 5)
+RANGE = (2, 3)
 SIZE = (1, 1)
 DPI = 128 # combined with SIZE: 128*128 pixels
 MSZ = 10
-INTENSITY = 0.5
+INTENSITY = 0.8
 TYPE = 1
 COLORS = ["red","green","blue","yellow","pink","black","orange","purple","brown","gray","cyan","magenta"]
+COLORS2 = ["black"]
 MARKERS = [".", "o", "v", "^", "1", "2", "s", "p", "*", "h", "+", "x", "X", "D"]
 
 parser = argparse.ArgumentParser(description="Generate images which satisfy or dissatisfy Gestalt principle")
@@ -38,7 +39,7 @@ img_sz = tuple(args.size) if args.size else SIZE
 dpi = args.dpi if args.dpi else DPI
 msz = args.msz if args.msz else MSZ
 intensity = args.intensity if args.intensity else INTENSITY
-colors = list(args.colors) if args.colors else COLORS
+colors = list(args.colors) if args.colors else COLORS2
 markers = list(args.markers) if args.markers else MARKERS
 itype = args.type if args.type else TYPE
 

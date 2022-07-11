@@ -137,10 +137,7 @@ class Continuity(Gestalt):
                     plt.scatter(x_lists[i], y_lists[i], s=self.msz, c=self.colors[random.randint(0, c_num-1)], 
                             marker=self.markers[random.randint(0, m_num-1)])
             else:
-                x_list_f, x_list_r, y_list1_f, y_list1_r, y_list2_f, y_list2_r = self.__setPointsType2()
-                x_lists = [x_list_f, x_list_r, x_list_f, x_list_r]
-                y_lists = [y_list1_f, y_list1_r, y_list2_f, y_list2_r]
-                crs, mks, szs = self.__setParamsType2(isN)
+                x_lists, y_lists, crs, mks, szs = self.__setType2Lists(isN)
                 for i in range(len(x_lists)):
                     plt.scatter(x_lists[i], y_lists[i], s=szs[i], c=crs[i], marker=mks[i])
             plt.axis('off')
@@ -180,16 +177,37 @@ class Continuity(Gestalt):
         
         '''
         plt.figure(figsize=self.img_sz, dpi=self.dpi)
-        x_list_f, x_list_r, y_list1_f, y_list1_r, y_list2_f, y_list2_r = self.__setPointsType2()
-        # assemble curves
-        x_lists = [x_list_f, x_list_r, x_list_f, x_list_r]
-        y_lists = [y_list1_f, y_list1_r, y_list2_f, y_list2_r]
-        crs, mks, szs = self.__setParamsType2(isN)
+        x_lists, y_lists, crs, mks, szs = self.__setType2Lists(isN)
         for i in range(len(x_lists)):
             plt.scatter(x_lists[i], y_lists[i], s=szs[i], c=crs[i], marker=mks[i])
         plt.axis('off')
         plt.savefig(path)
         plt.close()
+        
+    def __setType2Lists(self, isN, drop_rate=0.2):
+        '''
+        setup the point lists for drawing
+        
+        parameters
+        ----------
+        drop_rate: the percentage of a part of the points in the curve to be dropped
+        
+        '''
+        x_list_f, x_list_r, y_list1_f, y_list1_r, y_list2_f, y_list2_r = self.__setPointsType2()
+        crs, mks, szs, fg = self.__setParamsType2(isN)
+        x_list1_f, x_list1_r, x_list2_f, x_list2_r = x_list_f, x_list_r, x_list_f, x_list_r
+        drop0 = lambda ls: int(drop_rate*len(ls))
+        drop = lambda ls: 1 if drop0(ls) < 1 else drop0(ls)
+        if isN:
+            if fg:
+                x_list1_f, x_list1_r = x_list1_f[:-drop(x_list1_f)], x_list1_r[drop(x_list1_r):]
+                y_list1_f, y_list1_r = y_list1_f[:-drop(y_list1_f)], y_list1_r[drop(y_list1_r):]
+            else:
+                x_list2_f, x_list2_r = x_list2_f[:-drop(x_list2_f)], x_list2_r[drop(x_list2_r):]
+                y_list2_f, y_list2_r = y_list2_f[:-drop(y_list2_f)], y_list2_r[drop(y_list2_r):]
+        x_lists = [x_list1_f, x_list1_r, x_list2_f, x_list2_r]
+        y_lists = [y_list1_f, y_list1_r, y_list2_f, y_list2_r]
+        return x_lists, y_lists, crs, mks, szs
 
     def __setParamsType2(self, isN):
         '''
@@ -210,31 +228,22 @@ class Continuity(Gestalt):
         l1_cr, l2_cr = l1_cf, l2_cf
         l1_mr, l2_mr = l1_mf, l2_mf
         l1_sr, l2_sr = l1_sf, l2_sf
-        if isN: # randomly generate disconnecting actions
-            act_num = random.randint(0, 2) # number of modifications
-            fg = True if random.randint(0, 1) else False
-            actions = []
+        fg = True if random.randint(0, 1) else False
+        if isN:
+            '''
             if fg: # set changing color as essential
                 while(l1_cr == l1_cf): l1_cr = self.colors[random.randint(0, c_num-1)]
             else: 
                 while(l2_cr == l2_cf): l2_cr = self.colors[random.randint(0, c_num-1)]
-            for _ in range(act_num):
-                action = random.randint(1, 2)
-                while action in actions: action = random.randint(1, 2)
-                actions.append(action)
-                if action == 1:
-                    if fg:
-                        while(l1_mr == l1_mf): l1_mr = self.markers[random.randint(0, m_num-1)]
-                    else:
-                        while(l2_mr == l2_mf): l2_mr = self.markers[random.randint(0, m_num-1)]
-                elif action == 2:
-                    if fg:
-                        l1_sr = self.msz*2
-                    else:
-                        l2_sr = self.msz*2
-                else:
-                    pass
-        return [l1_cf, l1_cr, l2_cf, l2_cr], [l1_mf, l1_mr, l2_mf, l2_mr], [l1_sf, l1_sr, l2_sf, l2_sr]
+            '''
+            if fg:
+                while(l1_mr == l1_mf): l1_mr = self.markers[random.randint(0, m_num-1)]
+                l1_sr = self.msz*2
+            else:
+                while(l2_mr == l2_mf): l2_mr = self.markers[random.randint(0, m_num-1)]
+                l2_sr = self.msz*2
+        return [l1_cf, l1_cr, l2_cf, l2_cr], [l1_mf, l1_mr, l2_mf, l2_mr], \
+                [l1_sf, l1_sr, l2_sf, l2_sr], fg
 
     def __setPoints(self, isN, rev=True, p_num=10, funcs=10, n_min=0.6, n_max=1.0):
         '''
@@ -260,7 +269,7 @@ class Continuity(Gestalt):
         if isN: x_list, y_list = self.__addNoise(x_list, y_list)
         return x_list, y_list
     
-    def __setPointsType2(self, p_num=12, funcs=6, n_min=0.8, n_max=1.0):
+    def __setPointsType2(self, p_num=12, funcs=6, n_min=0.6, n_max=1.0):
         '''
         return 4 x_lists, 4 y_lists of 2 crossed curves
         
@@ -341,5 +350,5 @@ class Continuity(Gestalt):
         elif id == 4:
             return lambda x: np.log(x)
         else:
-            return lambda x : x**0.1
+            return lambda x : 2*x
         
