@@ -128,12 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# ignore data
-positive/
-negative/
-sample/
-image-generate/
-obsolete/
-
-# ignore test files
-exper.py
+# ignore data set
+model/
+dataset/
+positive*
+negative*
+torch_ver/

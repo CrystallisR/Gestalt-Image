@@ -350,5 +350,4 @@ class Continuity(Gestalt):
         elif id == 4:
             return lambda x: np.log(x)
         else:
-            return lambda x : 2*x
-        
+            return lambda x : 2*x      
