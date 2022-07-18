@@ -130,7 +130,7 @@ dmypy.json
 
 # ignore data set
 model/
-dataset/
+dataset*
 positive*
 negative*
 torch_ver/

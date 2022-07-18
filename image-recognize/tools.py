@@ -21,8 +21,8 @@ def unisonShuffledCopies(a, b):
 def loadData(pos_folder, neg_folder):
     X_pos = readImgsAsMatrix(pos_folder)
     X_neg = readImgsAsMatrix(neg_folder)
-    y_pos = np.ones(len(X_pos), dtype=np.uintc)
-    y_neg = np.zeros(len(X_neg), dtype=np.uintc)
+    y_pos = np.ones(len(X_pos), dtype=np.int64)
+    y_neg = np.zeros(len(X_neg), dtype=np.int64)
     X_data = np.concatenate((X_pos, X_neg), axis=0)
     y_data = np.concatenate((y_pos, y_neg), axis=0)
     X_data, y_data = unisonShuffledCopies(X_data, y_data)

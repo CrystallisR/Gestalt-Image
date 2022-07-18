@@ -3,8 +3,9 @@ from keras import models
 
 # hyperparameters & path
 MODELPATH = ('model/')
-X_TEST = 'dataset/x_test.npy'
-Y_TEST = 'dataset/y_test.npy'
+DATASET = ('dataset2/')
+X_TEST = DATASET + 'x_test.npy'
+Y_TEST = DATASET + 'y_test.npy'
 
 # Load testset
 x_test = np.load(X_TEST)
