@@ -4,6 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from scipy.interpolate import interp1d
 
 class Gestalt(object):
     
@@ -53,9 +54,11 @@ class Continuity(Gestalt):
 
         '''
         if type == 1:
-            self.__genImg(path, False)
-        else:
+            self.__genImgType1(path, False)
+        elif type == 2:
             self.__genImgType2(path, False)
+        else:
+            self.__genImgType3(path, False)
  
     def genNegativeImg(self, path, type= 1):
         '''
@@ -67,9 +70,11 @@ class Continuity(Gestalt):
 
         '''
         if type == 1:
-            self.__genImg(path, True)
-        else:
+            self.__genImgType1(path, True)
+        elif type == 2:
             self.__genImgType2(path, True)
+        else:
+            self.__genImgType3(path, True)
         
     def genPositiveImgSamples(self, path, plots=(5, 5), type= 1):
         '''
@@ -93,7 +98,7 @@ class Continuity(Gestalt):
     # | The functions below are essential tool functions            |
     # <------------------------------------------------------------->
     
-    def __genImg(self, path, isN):
+    def __genImgType1(self, path, isN):
         '''
         prototype for generating both positive & negative image
         
@@ -105,14 +110,55 @@ class Continuity(Gestalt):
         '''
         c_num, m_num = len(self.colors), len(self.markers)
         plt.figure(figsize=self.img_sz, dpi=self.dpi)
-        x_lists, y_lists = self.__genImgData(isN)
+        x_lists, y_lists = self.__genImgDataType1(isN)
         for i in range(len(x_lists)): 
             plt.scatter(x_lists[i], y_lists[i], s=self.msz, c=self.colors[random.randint(0, c_num-1)], 
                         marker=self.markers[random.randint(0, m_num-1)])
         plt.axis('off')
         plt.savefig(path)
         plt.close()
-    
+        
+    def __genImgType2(self, path, isN):
+        '''
+        prototype for generating image type 2
+        
+        disconnect a continued curve
+        
+        parameters
+        ----------
+        path : where to save the image
+        isN : whether generate negative image
+        
+        '''
+        plt.figure(figsize=self.img_sz, dpi=self.dpi)
+        x_lists, y_lists, crs, mks, szs = self.__setListsType2(isN)
+        for i in range(len(x_lists)):
+            plt.scatter(x_lists[i], y_lists[i], s=szs[i], c=crs[i], marker=mks[i])
+        plt.axis('off')
+        plt.savefig(path)
+        plt.close()
+        
+    def __genImgType3(self, path, isN, scale=0.5):
+        '''
+        prototype for generating image type 3
+        
+        lines and curves
+        
+        parameters
+        ----------
+        path : where to save the image
+        isN : whether generate negative image
+        
+        '''
+        c_num = len(self.colors)
+        plt.figure(figsize=self.img_sz, dpi=self.dpi)
+        x_lists, y_lists = self.__genImgDataType3(isN, scale)
+        for i in range(len(x_lists)): 
+            plt.plot(x_lists[i], y_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
+        plt.axis('off')
+        plt.savefig(path)
+        plt.close()
+
     def __genImgSamples(self, path, isN, plots, type):
         '''
         prototype for generating either positive or negative image massive samples
@@ -132,19 +178,23 @@ class Continuity(Gestalt):
         for i in range(1, rows*cols+1):
             fig.add_subplot(rows, cols, i)
             if type == 1:
-                x_lists, y_lists = self.__genImgData(isN)
+                x_lists, y_lists = self.__genImgDataType1(isN)
                 for i in range(len(x_lists)): 
                     plt.scatter(x_lists[i], y_lists[i], s=self.msz, c=self.colors[random.randint(0, c_num-1)], 
                             marker=self.markers[random.randint(0, m_num-1)])
-            else:
-                x_lists, y_lists, crs, mks, szs = self.__setType2Lists(isN)
+            elif type == 2:
+                x_lists, y_lists, crs, mks, szs = self.__setListsType2(isN)
                 for i in range(len(x_lists)):
                     plt.scatter(x_lists[i], y_lists[i], s=szs[i], c=crs[i], marker=mks[i])
+            else:
+                x_lists, y_lists = self.__genImgDataType3(isN, scale=0.5)
+                for i in range(len(x_lists)): 
+                    plt.plot(x_lists[i], y_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
             plt.axis('off')
         plt.savefig(path)
         plt.close()
-        
-    def __genImgData(self, isN):
+    
+    def __genImgDataType1(self, isN, num=None):
         '''
         generate data which is needed for __genImg() and __genImgSample()
         
@@ -156,35 +206,45 @@ class Continuity(Gestalt):
         
         '''
         x_lists, y_lists = [], []
-        num = random.randint(self.num_range[0], self.num_range[1])
+        if not num:
+            num = random.randint(self.num_range[0], self.num_range[1])
         fg = True if random.randint(0,1) == 1 else False
         for _ in range(num):
-            x_list, y_list = self.__setPoints(isN, rev=fg)
+            x_list, y_list = self.__setPointsType1(isN, rev=fg)
             x_lists.append(x_list), y_lists.append(y_list)
             fg = not fg if num==2 else True if random.randint(0,1) == 1 else False
         return x_lists, y_lists
-        
-    def __genImgType2(self, path, isN):
+
+    def __genImgDataType3(self, isN, scale=0.5):
         '''
-        prototype for generating image type 2
+        generate data which is needed for __genImg() and __genImgSample()
         
-        disconnect a continued curve
+        return lists for type3 image
         
         parameters
         ----------
-        path : where to save the image
         isN : whether generate negative image
+        scale: noise added to curves
         
         '''
-        plt.figure(figsize=self.img_sz, dpi=self.dpi)
-        x_lists, y_lists, crs, mks, szs = self.__setType2Lists(isN)
-        for i in range(len(x_lists)):
-            plt.scatter(x_lists[i], y_lists[i], s=szs[i], c=crs[i], marker=mks[i])
-        plt.axis('off')
-        plt.savefig(path)
-        plt.close()
+        if isN:
+            x_lists, y_lists = self.__genImgDataType1(False, num=4)
+            scale = 4.0
+        else:
+            x_lists, y_lists = self.__genImgDataType1(False, num=2)
+        for i in range(len(y_lists)):
+            y_lists[i] = [y + np.random.normal(scale=scale) for y in y_lists[i]]
+        nx_lists, ny_lists = [], []
+        for i in range(len(x_lists)): 
+            x, y = np.array(x_lists[i]), np.array(y_lists[i])
+            cubic_interploation_model = interp1d(x, y, kind = "cubic")
+            X_=np.linspace(x.min(), x.max(), 100)
+            Y_=cubic_interploation_model(X_)
+            nx_lists.append(X_)
+            ny_lists.append(Y_)
+        return nx_lists, ny_lists
         
-    def __setType2Lists(self, isN, drop_rate=0.2):
+    def __setListsType2(self, isN, drop_rate=0.2):
         '''
         setup the point lists for drawing
         
@@ -245,7 +305,7 @@ class Continuity(Gestalt):
         return [l1_cf, l1_cr, l2_cf, l2_cr], [l1_mf, l1_mr, l2_mf, l2_mr], \
                 [l1_sf, l1_sr, l2_sf, l2_sr], fg
 
-    def __setPoints(self, isN, rev=True, p_num=10, funcs=10, n_min=0.6, n_max=1.0):
+    def __setPointsType1(self, isN, rev=True, p_num=10, funcs=10, n_min=0.6, n_max=1.0):
         '''
         return (x, y) coordinates of a set of points
         
@@ -261,7 +321,7 @@ class Continuity(Gestalt):
         # set total points of a curve & curve type
         tl_pts = random.randint(int(p_num*n_min), int(p_num*n_max))
         x_list = list(range(1, tl_pts+1))
-        rd_func = self.__randomFunc(random.randint(0, funcs))
+        rd_func = self.__randomFuncType1(random.randint(0, funcs))
         y_list = [rd_func(x) for x in x_list]
         scale = tl_pts/max(y_list)
         y_list = [y*scale for y in y_list]
@@ -283,8 +343,8 @@ class Continuity(Gestalt):
         # set total points of a curve & curve type
         tl_pts = random.randint(int(p_num*n_min), int(p_num*n_max))
         x_list = list(range(1, tl_pts+1))
-        rd_func1 = self.__randomFunc2(random.randint(0, funcs))
-        rd_func2 = self.__randomFunc2(random.randint(0, funcs))
+        rd_func1 = self.__randomFuncType2(random.randint(0, funcs))
+        rd_func2 = self.__randomFuncType2(random.randint(0, funcs))
         y_list1, y_list2 = [rd_func1(x) for x in x_list], [rd_func2(x) for x in x_list]
         scale1, scale2 = tl_pts/max(y_list1), tl_pts/max(y_list2)
         y_list1, y_list2 = [y*scale1 for y in y_list1], [y*scale2 for y in y_list2]
@@ -304,7 +364,7 @@ class Continuity(Gestalt):
         return [x + np.random.normal(scale=self.intensity) for x in x_list],\
                 [y + np.random.normal(scale=self.intensity) for y in y_list]
     
-    def __randomFunc(self, id):
+    def __randomFuncType1(self, id):
         '''
         return a curve function y=f(x) by id
         
@@ -334,7 +394,7 @@ class Continuity(Gestalt):
         else:
             return lambda x : 1/(1 + np.exp(-x))
         
-    def __randomFunc2(self, id):
+    def __randomFuncType2(self, id):
         '''
         an alternate method for randomFunc()
         

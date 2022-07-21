@@ -129,11 +129,11 @@ dmypy.json
 .pyre/
 
 # ignore data
-positive/
-negative/
-sample/
-image-generate/
-obsolete/
+positive*
+negative*
+sample*
+image-generate*
+obsolete*
 
 # ignore test files
-exper.py
+exper*

@@ -27,7 +27,7 @@ parser.add_argument("--msz", type=int, help="marker size")
 parser.add_argument("-i", "--intensity", type=float, help="noise intensity, 1.0 as default")
 parser.add_argument("-c", "--colors", type=str, nargs="+", help="set color list")
 parser.add_argument("-m", "--markers", type=str, nargs="+", help="set marker list")
-parser.add_argument("-t", "--type", type=int, choices=[1,2], help="choose the type of the image")
+parser.add_argument("-t", "--type", type=int, choices=[1,2,3], help="choose the type of the image")
 args = parser.parse_args()
 
 # set arguments
