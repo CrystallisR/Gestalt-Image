@@ -4,17 +4,21 @@ from matplotlib import pyplot as plt
 
 # hyperparameters & path
 MODELPATH = ('model/')
-DATASET = ('dataset1/')
+DATASET = ('datasetMul/')
 X_TRAIN = DATASET + 'x_train.npy'
 Y_TRAIN = DATASET + 'y_train.npy'
 X_TEST = DATASET + 'x_test.npy'
 Y_TEST = DATASET + 'y_test.npy'
+# visualization path
 TLOSS1 = 'visual/loss-type1.png'
 TLOSS2 = 'visual/loss-type2.png'
+TLOSSA = 'visual/loss-alltype.png'
 TACC1 = 'visual/accuracy-type1.png'
 TACC2 = 'visual/accuracy-type2.png'
-TLOSS = TLOSS1
-TACC = TACC1
+TACCA = 'visual/accuracy-alltype.png'
+# other parameters
+TLOSS = TLOSSA
+TACC = TACCA
 BATCHSIZE = 64
 EPOCHES = 50
 
@@ -43,7 +47,7 @@ plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'val'], loc='upper left')
-plt.savefig(TLOSS)
+plt.savefig(TACC)
 # loss
 fig2 = plt.figure()
 plt.plot(history.history['loss'])
@@ -52,4 +56,4 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'val'], loc='upper left')
-plt.savefig(TACC)
+plt.savefig(TLOSS)
