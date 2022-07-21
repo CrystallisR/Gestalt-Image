@@ -5,7 +5,7 @@ from keras.optimizers import Adam
 # hyperparameters & path
 MODELPATH = ('model/')
 SHAPE = (128, 128, 1)
-CLASSES = 3
+CLASSES = 5
 LR = 1e-5
 
 '''

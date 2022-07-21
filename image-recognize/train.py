@@ -12,9 +12,11 @@ Y_TEST = DATASET + 'y_test.npy'
 # visualization path
 TLOSS1 = 'visual/loss-type1.png'
 TLOSS2 = 'visual/loss-type2.png'
+TLOSS3 = 'visual/loss-type3.png'
 TLOSSA = 'visual/loss-alltype.png'
 TACC1 = 'visual/accuracy-type1.png'
 TACC2 = 'visual/accuracy-type2.png'
+TACC3 = 'visual/accuracy-type3.png'
 TACCA = 'visual/accuracy-alltype.png'
 # other parameters
 TLOSS = TLOSSA
