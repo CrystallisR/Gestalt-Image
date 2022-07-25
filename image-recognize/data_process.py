@@ -42,12 +42,13 @@ CLASSES2 = 2
 folders2 = [FOLDERP2, FOLDERN2]
 process(folders, CLASSES2, X_TRAIN2, X_TEST2, Y_TRAIN2, Y_TEST2)
 '''
-'''
+
+
 # train type-3
 CLASSES3 = 2
 folders3 = [FOLDERP3, FOLDERN3]
 process(folders3, CLASSES3, X_TRAIN3, X_TEST3, Y_TRAIN3, Y_TEST3)
-'''
+
 
 
 # train all type

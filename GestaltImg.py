@@ -57,8 +57,9 @@ class Continuity(Gestalt):
             self.__genImgType1(path, False)
         elif type == 2:
             self.__genImgType2(path, False)
-        else:
+        elif type == 3:
             self.__genImgType3(path, False)
+        else: pass
  
     def genNegativeImg(self, path, type= 1):
         '''
@@ -73,8 +74,9 @@ class Continuity(Gestalt):
             self.__genImgType1(path, True)
         elif type == 2:
             self.__genImgType2(path, True)
-        else:
+        elif type == 3:
             self.__genImgType3(path, True)
+        else: pass
         
     def genPositiveImgSamples(self, path, plots=(5, 5), type= 1):
         '''
@@ -138,7 +140,7 @@ class Continuity(Gestalt):
         plt.savefig(path)
         plt.close()
         
-    def __genImgType3(self, path, isN, scale=0.5):
+    def __genImgType3(self, path, isN):
         '''
         prototype for generating image type 3
         
@@ -152,9 +154,13 @@ class Continuity(Gestalt):
         '''
         c_num = len(self.colors)
         plt.figure(figsize=self.img_sz, dpi=self.dpi)
-        x_lists, y_lists = self.__genImgDataType3(isN, scale)
+        x_lists, y_lists = self.__genImgDataType3(isN)
+        fg = True if random.randint(0,1) == 1 else False
         for i in range(len(x_lists)): 
-            plt.plot(x_lists[i], y_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
+            if fg:
+                plt.plot(x_lists[i], y_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
+            else:
+                plt.plot(y_lists[i], x_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
         plt.axis('off')
         plt.savefig(path)
         plt.close()
@@ -186,11 +192,17 @@ class Continuity(Gestalt):
                 x_lists, y_lists, crs, mks, szs = self.__setListsType2(isN)
                 for i in range(len(x_lists)):
                     plt.scatter(x_lists[i], y_lists[i], s=szs[i], c=crs[i], marker=mks[i])
-            else:
-                x_lists, y_lists = self.__genImgDataType3(isN, scale=0.5)
+            elif type == 3:
+                x_lists, y_lists = self.__genImgDataType3(isN)
+                fg = True if random.randint(0,1) == 1 else False
                 for i in range(len(x_lists)): 
-                    plt.plot(x_lists[i], y_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
-            plt.axis('off')
+                    if fg:
+                        plt.plot(x_lists[i], y_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
+                    else:
+                        plt.plot(y_lists[i], x_lists[i], linewidth=2, c=self.colors[random.randint(0, c_num-1)]) # or linestyle = "dashed"
+            else: pass
+            plt.tick_params(axis='both', which='both', bottom=False, left=False, labelbottom=False, labelleft=False)
+            # plt.axis('off')
         plt.savefig(path)
         plt.close()
     
@@ -215,7 +227,7 @@ class Continuity(Gestalt):
             fg = not fg if num==2 else True if random.randint(0,1) == 1 else False
         return x_lists, y_lists
 
-    def __genImgDataType3(self, isN, scale=0.5):
+    def __genImgDataType3(self, isN):
         '''
         generate data which is needed for __genImg() and __genImgSample()
         
@@ -227,22 +239,38 @@ class Continuity(Gestalt):
         scale: noise added to curves
         
         '''
+        # set parameters
+        GRAIN = 100
+        END = int(GRAIN*0.3)
+        SHIFT = 6
+        XSHIFT = 0.4
+        # <set for pos or neg>
+        scale = 0.1 if not isN else 1
+        cut = random.randint(6, int(GRAIN*0.1)) if not isN else random.randint(int(GRAIN*0.18), int(GRAIN*0.24))
+        # <set for pos or neg>
+        cut_point = random.randint(END, GRAIN-END)
+        front_end, rear_start = int(cut_point-cut/2), int(cut_point+cut/2)
+        fg = True if random.randint(0,1) == 1 else False
+        # set curve list
+        x_list, y_list = self.__setPointsType1(False, rev=fg)
+        # for pos
+        y_list = [y + np.random.normal(scale=scale) for y in y_list]
+        x, y = np.array(x_list), np.array(y_list)
+        cubic_interploation_model = interp1d(x, y, kind = "cubic")
+        x_ = np.linspace(x.min(), x.max(), GRAIN)
+        y_ = cubic_interploation_model(x_)
+        # cut off a part of the curve (for positive images)
+        x_f, x_r = x_[:front_end], x_[rear_start:]
+        y_f, y_r = y_[:front_end], y_[rear_start:]
         if isN:
-            x_lists, y_lists = self.__genImgDataType1(False, num=4)
-            scale = 4.0
-        else:
-            x_lists, y_lists = self.__genImgDataType1(False, num=2)
-        for i in range(len(y_lists)):
-            y_lists[i] = [y + np.random.normal(scale=scale) for y in y_lists[i]]
-        nx_lists, ny_lists = [], []
-        for i in range(len(x_lists)): 
-            x, y = np.array(x_lists[i]), np.array(y_lists[i])
-            cubic_interploation_model = interp1d(x, y, kind = "cubic")
-            X_=np.linspace(x.min(), x.max(), 100)
-            Y_=cubic_interploation_model(X_)
-            nx_lists.append(X_)
-            ny_lists.append(Y_)
-        return nx_lists, ny_lists
+            shift = SHIFT if random.randint(0,1) == 1 else -SHIFT
+            if fg:
+                y_r = [y + shift for y in y_r]
+                x_r = [x + XSHIFT for x in x_r]
+            else:
+                y_f = [y + shift for y in y_f]
+                x_f = [x + XSHIFT for x in x_f]
+        return [x_f, x_r], [y_f, y_r]
         
     def __setListsType2(self, isN, drop_rate=0.2):
         '''
